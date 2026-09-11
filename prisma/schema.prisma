@@ -1,0 +1,74 @@
+// PRISMA ŞEMASI — veritabanı tablolarının "tasarım çizimi".
+// Burada yazdığın her model = veritabanında bir tablo.
+// Her değişiklikten sonra `npx prisma migrate dev --name <aciklama>` çalıştırılır.
+
+generator client {
+  // Rust'suz yeni client üreticisi (Prisma 8)
+  provider = "prisma-client"
+
+  // Üretilen kodun konumu (node_modules yerine projemizde durur)
+  output = "../src/generated/prisma"
+}
+datasource db {
+  // Bağlantı adresi .env'deki DATABASE_URL'den gelir
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─── ÜRÜN ────────────────────────────────────────────────────────────
+// Mağazada satılan her ürün. Sepet kalemleri ve sipariş kalemleri buna bağlı.
+model Product {
+  id          Int      @id @default(autoincrement()) // otomatik artan anahtar
+  name        String                                   // ürün adı
+  description String   @default("")                    // açıklama
+  priceCents  Int                                      // fiyatı KURUŞ olarak tutarız!
+                                                           // (1.50 TL => 150. Float parasal
+                                                           //  işlemlerde yuvarlama hatası yapar)
+  image       String   @default("")                    // görsel URL'si
+  stock       Int      @default(0)                     // stok adedi
+  createdAt   DateTime @default(now())
+
+  // İlişkiler: bir ürün, birçok sepet kaleminde ve sipariş kaleminde olabilir
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+}
+
+// ─── SİPARİŞ ─────────────────────────────────────────────────────────
+// Tek bir alışverişin tamamı. "Misafir" siparişleri de destekler (userId opsiyonel).
+model Order {
+  id         Int        @id @default(autoincrement())
+  userId     String?    // girişli kullanıcıysa dolsun (şimdilik null olabilir)
+  status     String     @default("PENDING") // PENDING | PAID | CANCELLED
+  totalCents Int        // sipariş anındaki toplam (fiyat değişse de geçmişi korur)
+  createdAt  DateTime   @default(now())
+
+  items OrderItem[] // bir siparişte birden fazla kalem olur (1-n ilişki)
+}
+
+// ─── SİPARİŞ KALEMİ ─────────────────────────────────────────────────
+// Siparişin içindeki her ürün satırı. Fiyatı kopyalarız: ürün fiyatı sonra
+// değişse bile geçmiş siparişteki fiyat bozulmaz ("snapshot" deseni).
+model OrderItem {
+  id         Int    @id @default(autoincrement())
+  orderId    Int
+  productId  Int
+  quantity   Int
+  priceCents Int    // o anki ürün fiyatının kopyası
+
+  // İlişkiler (SQLite'ta cascade: sipariş silinince kalemleri de silinir)
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+}
+
+// ─── SEPET KALEMİ ───────────────────────────────────────────────────
+// Kullanıcı sepete ürün eklediğinde oluşur. Sepet "kullanıcının bekleyen
+// OrderItem'ları" gibi düşünelebilir; sipariş tamamlanınca OrderItem'a dönüşür.
+model CartItem {
+  id        Int      @id @default(autoincrement())
+  userId    String?  // girişli kullanıcı; şimdilik "misafir" kimliği de olur
+  productId Int
+  quantity  Int
+  createdAt DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
