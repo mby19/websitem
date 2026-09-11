@@ -19,6 +19,37 @@ export default function CartPage() {
   const { lines, setQuantity, remove, clear } = useCart();
   const [products, setProducts] = useState<Map<number, ProductInfo>>(new Map());
   const [loading, setLoading] = useState(true);
+  // Checkout durumu: bekliyor / hata mesajı (buton çift tık koruması dahil)
+  const [checkingOut, setCheckingOut] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Checkout: sepeti siparişe çeviren API çağrısı
+  async function checkout() {
+    setCheckingOut(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items: lines }),
+      });
+      if (!res.ok) {
+        const data = (await res.json()) as { error?: string };
+        setError(data.error ?? "Ödeme sırasında hata oluştu");
+        return;
+      }
+      const { orderId } = (await res.json()) as { orderId: number };
+      // Sipariş geçmişi listesine ekle (yeni en başta)
+      const raw = localStorage.getItem("websitem:orders");
+      const ids = raw ? (JSON.parse(raw) as number[]) : [];
+      localStorage.setItem("websitem:orders", JSON.stringify([orderId, ...ids]));
+      // Sepeti boşalt, teşekkür sayfasına git
+      clear();
+      window.location.href = `/siparis/${orderId}`;
+    } finally {
+      setCheckingOut(false);
+    }
+  }
 
   // Sepet değişince eksik ürün bilgilerini tek istekte getir
   useEffect(() => {
@@ -99,18 +130,17 @@ export default function CartPage() {
             </div>
           );
         })}
-      </div>
-
-      <div className="mt-6 flex items-center justify-between border-t border-neutral-200 pt-4 dark:border-neutral-800">
-        <span className="text-lg">
-          Toplam: <strong>{formatPrice(total)}</strong>
-        </span>
+      {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
         <div className="flex gap-3">
           <button className="rounded border border-neutral-300 px-3 py-1.5 text-sm hover:bg-neutral-100 dark:border-neutral-700 dark:hover:bg-neutral-800" onClick={clear}>
             Sepeti Boşalt
           </button>
-          <button className="rounded bg-blue-600 px-4 py-1.5 font-medium text-white hover:bg-blue-700">
-            Ödemeye Geç
+          <button
+            className="rounded bg-blue-600 px-4 py-1.5 font-medium text-white hover:bg-blue-700 disabled:bg-neutral-400"
+            onClick={checkout}
+            disabled={checkingOut}
+          >
+            {checkingOut ? "İşleniyor…" : "Ödemeye Geç"}
           </button>
         </div>
       </div>

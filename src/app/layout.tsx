@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Geist, Geist_Mono } from "next/font/google";
 import { CartProvider } from "@/lib/cart-context";
 import { CartBadge } from "@/components/cart-badge";
+import { SessionMenu } from "@/components/session-menu";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -39,9 +40,13 @@ export default function RootLayout({
                 <Link href="/" className="hover:underline">
                   Ürünler
                 </Link>
+                <Link href="/siparisler" className="hover:underline">
+                  Siparişler
+                </Link>
                 <Link href="/sepet" className="hover:underline">
                   Sepet <CartBadge />
                 </Link>
+                <SessionMenu />
               </div>
             </nav>
           </header>

@@ -1,13 +1,12 @@
 // Bu dosya Prisma CLI'nin VERİTABANINA nasıl bağlanacağını söyler.
 import "dotenv/config";
-import { resolve } from "path";
+import { join, resolve } from "path";
 import { defineConfig, env } from "prisma/config";
 
-// SQLite yol tuzağı: göreli "file:" yolu CLI şema klasörüne, adapter ise
-// çalışma dizinine göre çözer. İkisini de aynı mutlak yola sabitliyoruz.
-const rawUrl = env("DATABASE_URL") ?? "file:./prisma/dev.db";
-const dbFile = resolve(process.cwd(), rawUrl.startsWith("file:") ? rawUrl.slice(5) : rawUrl);
-
+// SQLite yol tuzağı: göreli "file:" yolu CLI şema klasörüne göre çözülür.
+// Aynı davranışı burada açıkça uygulayıp mutlak yola sabitliyoruz.
+const rawUrl = env("DATABASE_URL") ?? "file:./dev.db";
+const dbFile = resolve(join(process.cwd(), "prisma"), rawUrl.startsWith("file:") ? rawUrl.slice(5) : rawUrl);
 export default defineConfig({
   // Şema dosyasının yeri
   schema: "prisma/schema.prisma",

@@ -15,6 +15,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ─── KULLANICI ───────────────────────────────────────────────────────
+// Email + şifre ile giriş (credentials). Şifre ASLA düz metin saklanmaz:
+// bcrypt hash'i tutulur.
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  name         String   @default("")
+  createdAt    DateTime @default(now())
+
+  orders Order[] // kullanıcının siparişleri
+}
+
 // ─── ÜRÜN ────────────────────────────────────────────────────────────
 // Mağazada satılan her ürün. Sepet kalemleri ve sipariş kalemleri buna bağlı.
 model Product {
@@ -34,10 +47,11 @@ model Product {
 }
 
 // ─── SİPARİŞ ─────────────────────────────────────────────────────────
-// Tek bir alışverişin tamamı. "Misafir" siparişleri de destekler (userId opsiyonel).
+// Tek bir alışverişin tamamı. "Misafir" siparişleri de destekler (user opsiyonel).
 model Order {
   id         Int        @id @default(autoincrement())
-  userId     String?    // girişli kullanıcıysa dolsun (şimdilik null olabilir)
+  user       User?      @relation(fields: [userId], references: [id])
+  userId     Int?       // girişli kullanıcıysa dolsun (misafir siparişi null)
   status     String     @default("PENDING") // PENDING | PAID | CANCELLED
   totalCents Int        // sipariş anındaki toplam (fiyat değişse de geçmişi korur)
   createdAt  DateTime   @default(now())
@@ -65,7 +79,7 @@ model OrderItem {
 // OrderItem'ları" gibi düşünelebilir; sipariş tamamlanınca OrderItem'a dönüşür.
 model CartItem {
   id        Int      @id @default(autoincrement())
-  userId    String?  // girişli kullanıcı; şimdilik "misafir" kimliği de olur
+  userId    Int?     // girişli kullanıcı; şimdilik misafirde null
   productId Int
   quantity  Int
   createdAt DateTime @default(now())

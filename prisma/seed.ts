@@ -5,6 +5,7 @@ import { PrismaClient } from "../src/generated/prisma/client";
 import { join } from "path";
 
 const adapter = new PrismaBetterSqlite3({
+  // .env'deki göreli yol CLI ile aynı konvansiyonda: prisma/ klasörü bazlı
   url: `file:${join(process.cwd(), "prisma", "dev.db")}`,
 });
 const prisma = new PrismaClient({ adapter });
@@ -21,7 +22,10 @@ const products = [
 
 async function main() {
   // Tekrar çalıştırmaya dayanıklı olsun diye önce temizle
+  // FK sırası önemli: bağlı kalemler önce, ana tablolar sonra silinir
+  await prisma.orderItem.deleteMany();
   await prisma.cartItem.deleteMany();
+  await prisma.order.deleteMany();
   await prisma.product.deleteMany();
 
   for (const p of products) {
