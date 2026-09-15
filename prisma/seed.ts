@@ -1,16 +1,11 @@
 // SEED — veritabanını örnek ürünlerle dolduran script.
 // Çalıştırmak için: npx prisma db seed
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import "dotenv/config";
 import { PrismaClient } from "../src/generated/prisma/client";
-import { join } from "path";
 
-const adapter = new PrismaBetterSqlite3({
-  // .env'deki göreli yol CLI ile aynı konvansiyonda: prisma/ klasörü bazlı
-  url: `file:${join(process.cwd(), "prisma", "dev.db")}`,
-});
-const prisma = new PrismaClient({ adapter });
+const prisma = new PrismaClient();
 
-// Fiyatlar kuruş cinsinden: 12999 = 129.99 TL
+// Fiyatlar kuruş cinsinden: 129990 = 1299.90 TL
 const products = [
   { name: "Mekanik Klavye KX-1", description: "Hot-swap destekli, RGB aydınlatmalı %75 klavye.", priceCents: 129990, stock: 15 },
   { name: "Kablosuz Mouse MX-3", description: "Sessiz tık, 4000 DPI, USB-C hızlı şarj.", priceCents: 54950, stock: 30 },

@@ -1,26 +1,22 @@
 // PRISMA CLIENT SINGLETON
 // Next.js dev modunda her hot-reload'da yeni bir PrismaClient oluşursa
 // veritabanı bağlantıları birikir. Çözüm: global cache'e bir tane koy.
-import { join, resolve } from "path";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+//
+// .env'i açıkça yüklüyoruz: bazı runtime'larda Next'in env yüklemesi
+// eski/çevresel değerleri geçirebiliyor; dotenv .env'i garantiler.
+// (Vercel'de .env dosyası yok — gerçek env'ler dotenv'i etkilemez.)
+import { config } from "dotenv";
+config({ override: true });
+// Postgres sürümü: driver adapter'a gerek yok — Prisma 6 Postgres'i
+// native (Rust query engine ile) çalıştırır. Bağlantı adresi .env'den gelir.
 import { PrismaClient } from "@/generated/prisma/client";
 
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
-// SQLite yol çözümleme tuzağı: Prisma CLI göreli "file:" yollarını şema
-// klasörüne (prisma/) göre çözer; adapter ise süreç çalışma dizinine
-// (process.cwd()) göre çözer. Aynı string iki araç için farklı dosya açar!
-// Çözüm: CLI ile AYNI konvansiyonu uygula — göreli yolu prisma/ altında çöz.
-function toAbsoluteFileUrl(raw: string): string {
-  const rawPath = raw.startsWith("file:") ? raw.slice(5) : raw;
-  const absolute = resolve(join(process.cwd(), "prisma"), rawPath);
-  return `file:${absolute}`;
-}
-
-const adapter = new PrismaBetterSqlite3({
-  url: toAbsoluteFileUrl(process.env.DATABASE_URL ?? "file:./dev.db"),
+// Neon pooled connection kullanılırken bile Prisma'nın kendi bağlantı
+const prisma = globalForPrisma.prisma ?? new PrismaClient({
+  datasourceUrl: process.env.DATABASE_URL,
 });
-const prisma = globalForPrisma.prisma ?? new PrismaClient({ adapter });
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 

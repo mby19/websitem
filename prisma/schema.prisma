@@ -10,8 +10,8 @@ generator client {
   output = "../src/generated/prisma"
 }
 datasource db {
-  // Bağlantı adresi .env'deki DATABASE_URL'den gelir
-  provider = "sqlite"
+  // Neon Postgres'e bağlanır (.env → DATABASE_URL)
+  provider = "postgres"
   url      = env("DATABASE_URL")
 }
 
