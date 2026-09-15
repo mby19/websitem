@@ -3,6 +3,8 @@
 Öğrenme amaçlı, uçtan uca çalışan bir e-ticaret uygulaması.
 Next.js + TypeScript ile; veritabanından siparişe tüm temel akışlar gerçek kod ile uygulanmıştır.
 
+**Canlı:** https://websitem-umber.vercel.app · **Stack:** Next.js 16, TypeScript, Prisma, Neon Postgres, Auth.js
+
 ## Özellikler
 
 - **Ürün kataloğu** — listeleme ve detay sayfaları (Server Component + SSR)
@@ -22,32 +24,35 @@ Next.js + TypeScript ile; veritabanından siparişe tüm temel akışlar gerçek
 | Framework | Next.js 16 (App Router, Server Components, Server Actions) |
 | Dil | TypeScript |
 | Stil | Tailwind CSS |
-| ORM / DB | Prisma 6 + SQLite |
+| ORM / DB | Prisma 6 + Neon Postgres (serverless) |
 | Auth | Auth.js (next-auth) v5, Credentials + bcryptjs |
-| Test/Doğrulama | Manuel uçtan uca + `tsc` |
+| Test/Doğrulama | Manuel uçtan uca (tarayıcı) + `tsc` |
 
 ## Çalıştırma
 
 ```bash
-npm install
-npx prisma migrate deploy   # tabloları oluştur
-npx prisma db seed          # örnek ürünler
-npm run dev                 # http://localhost:3000
+npm install                # postinstall: prisma generate çalışır
+npx prisma migrate deploy  # tabloları oluştur
+npx prisma db seed         # örnek ürünler
+npm run dev                # http://localhost:3000
 ```
 
 Gerekli `.env`:
 
 ```env
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="postgresql://<kullanıcı>:<şifre>@<host>/<db>?sslmode=require"
 AUTH_SECRET="<rastgele 32+ karakter>"   # openssl rand -base64 32
 ```
 
+Lokal geliştirmede de Neon bağlantısı kullanılıyor (tek kaynak, kopyasız).
+Vercel'de `DATABASE_URL` + `AUTH_SECRET` panel üzerinden ayarlanır.
+
 ## Öğrenme Notları (kayda değer tuzaklar)
 
-- **SQLite yol çözümleme tutarsızlığı**: Prisma CLI göreli `file:` yollarını
-  şema klasörüne (`prisma/`), driver adapter ise `process.cwd()`'ye göre çözer.
-  Aynı string iki araç için farklı dosya açabilir. `src/lib/prisma.ts` ve
-  `prisma.config.ts` bu dönüşümü tek merkezde yapar.
+- **SQLite yol çözümleme tutarsızlığı** (SQLite dönemi): Prisma CLI göreli
+  `file:` yollarını şema klasörüne, adapter ise `process.cwd()`'ye göre çözer.
+  Aynı string iki araç için farklı dosya açar. Postgres'e geçince bu sınıf
+  sorun tamamen ortadan kalktı — bir deploy modeli seçiminin gizli maliyeti.
 - **Native modül ABI uyuşmazlığı**: `better-sqlite3` binary'si, onu yükleyen
   Node sürümünün ABI'siyle derlenmek zorundadır. `npm rebuild better-sqlite3`.
 - **Parasal değerler kuruş cinsinden** (`priceCents`): Float ile para tutmak
@@ -57,9 +62,23 @@ AUTH_SECRET="<rastgele 32+ karakter>"   # openssl rand -base64 32
 
 ## Yol haritası
 
+- [x] Vercel + Neon Postgres deploy
 - [ ] Stripe test modunda gerçek ödeme akışı (`src/app/api/checkout/route.ts` hazır)
 - [ ] Admin paneli (ürün CRUD + stok)
-- [ ] Vercel + Neon Postgres deploy (SQLite yerine)
+
+### Deploy'da öğrenilen tuzaklar (Vercel + Turbopack + Prisma)
+
+- **Query engine platform uyuşmazlığı**: build makinesi Debian'da `debian` engine
+  üretir, Vercel runtime `rhel-openssl-3.0.x` ister. Kalıcı çözüm: Rust engine'i
+  deployment'tan tamamen çıkarmak — `engineType = "client"` + `@prisma/adapter-pg`.
+  (binaryTargets + `outputFileTracingIncludes` kombinasyonu Turbopack build'inde
+  güvenilir çalışmadı.)
+- **npm install scriptleri**: `@prisma/client`, `@prisma/engines`, `prisma`
+  postinstall'ları onaysız atlanırsa `prisma generate` engine'siz client üretir.
+  `package.json > allowScripts` ile onaylandı; `postinstall: prisma generate`.
+- **`product` id'leri seed'i tekrar edince kayar**: Postgres serial sequence
+  `deleteMany` ile sıfırlanmaz; seed'i tekrarlayan tablolarda
+  `TRUNCATE ... RESTART IDENTITY` gerekir.
 
 ## Bilinen sınırlar
 
