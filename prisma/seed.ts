@@ -1,10 +1,13 @@
 // SEED — veritabanını örnek ürünlerle dolduran script.
 // Çalıştırmak için: npx prisma db seed
 import "dotenv/config";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client";
 
-const prisma = new PrismaClient();
-
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL,
+});
+const prisma = new PrismaClient({ adapter });
 // Fiyatlar kuruş cinsinden: 129990 = 1299.90 TL
 const products = [
   { name: "Mekanik Klavye KX-1", description: "Hot-swap destekli, RGB aydınlatmalı %75 klavye.", priceCents: 129990, stock: 15 },

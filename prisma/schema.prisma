@@ -9,9 +9,10 @@ generator client {
   // Üretilen kodun konumu (node_modules yerine projemizde durur)
   output = "../src/generated/prisma"
 
-  // Vercel build'i Debian'da çalışır, runtime rhel istiyor:
-  // native (build makinesi) + rhel-openssl-3.0.x (Vercel runtime) ikisini de üret
-  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+  // JS query engine: Rust engine binary'sine ihtiyaç YOK — bağlantıyı
+  // @prisma/adapter-pg driver adapter'ı üzerinden yönetir. Serverless
+  // (Vercel) bundle'larında .so.node dosyası taşımak gerekmez.
+  engineType = "client"
 }
 datasource db {
   // Neon Postgres'e bağlanır (.env → DATABASE_URL)

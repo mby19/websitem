@@ -10,12 +10,7 @@ config({ override: true });
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Prisma'nın generated client'ı + query engine (.so.node) dosyası,
-  // Vercel'in serverless bundle'ına ancak buradaki tracing ile girer.
-  // (Aksi halde runtime'da "could not locate the Query Engine" hatası çıkar.)
-  outputFileTracingIncludes: {
-    "/*": ["./src/generated/prisma/**/*"],
-  },
+  /* config options here */
 };
 
 export default nextConfig;
