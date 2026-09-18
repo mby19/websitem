@@ -65,6 +65,22 @@ model Order {
   items OrderItem[] // bir siparişte birden fazla kalem olur (1-n ilişki)
 }
 
+// ─── EVENT LOG ───────────────────────────────────────────────────────
+// Kafka consumer'ın yazdığı kalıcı olay günlüğü.
+// Kafka'daki her mesajın gerçek koordinatları (partition/offset) saklanır:
+// "olay tekrar oynatılabilir" fikrinin en küçük gösterimi.
+model EventLog {
+  id        Int      @id @default(autoincrement())
+  topic     String                                    // Kafka topic adı
+  partition Int                                       // hangi bölümde
+  offset    Int                                       // bölümdeki sıra numarası
+  type      String                                    // event türü: ORDER_CREATED
+  payload   String                                    // JSON gövde (snapshot)
+  createdAt DateTime @default(now())
+
+  @@unique([topic, partition, offset]) // aynı mesaj iki kez yazılmaz (idempotent consumer)
+}
+
 // ─── SİPARİŞ KALEMİ ─────────────────────────────────────────────────
 // Siparişin içindeki her ürün satırı. Fiyatı kopyalarız: ürün fiyatı sonra
 // değişse bile geçmiş siparişteki fiyat bozulmaz ("snapshot" deseni).

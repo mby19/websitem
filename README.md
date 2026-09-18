@@ -63,8 +63,36 @@ Vercel'de `DATABASE_URL` + `AUTH_SECRET` panel üzerinden ayarlanır.
 ## Yol haritası
 
 - [x] Vercel + Neon Postgres deploy
+- [x] Admin paneli (ürün CRUD + stok) — `ADMIN_EMAIL` env guard'ı
+- [x] Kafka event pipeline (aşağıda)
 - [ ] Stripe test modunda gerçek ödeme akışı (`src/app/api/checkout/route.ts` hazır)
-- [ ] Admin paneli (ürün CRUD + stok)
+
+## Kafka event pipeline (öğretici)
+
+Checkout, sipariş yazıldıktan sonra bir event yayınlar; Kafka'dan bağımsız
+bir consumer bu olayı kalıcı günlüğe düşer:
+
+```text
+PRODUCER                          BROKER                    CONSUMER
+checkout Server Action  ──HTTP──▶  Upstash Kafka   ──HTTP──▶  /api/events/consume
+(src/lib/kafka.ts)                topic: orders             (tick) → EventLog tablosu
+                                                            (partition·offset kayıtlı)
+```
+
+- **Producer** (`src/lib/kafka.ts`): checkout transaction'ı *sonrasında*
+  `ORDER_CREATED` event'i yayınlanır — best-effort: Kafka kapalıysa
+  (`UPSTASH_KAFKA_*` env yok) checkout PATLAMAZ (`eventPublished: false`).
+  Event payload'ı snapshot: tüm sipariş durumu taşınır (event-carried state).
+- **Consumer** (`POST /api/events/consume`): consumer group (`websitem-log`)
+  ile offset yönetimi. Her tick bir batch; `(topic,partition,offset)` unique
+  olduğundan aynı mesaj iki kez yazılmaz (idempotent consumer).
+- **Tetikleyiciler:** `npm run kafka:consume` (lokal 3 sn'lik döngü) ya da
+  admin → Event pipeline → *consume* butonu. Gerçek üretimde kalıcı worker.
+- **Görünüm:** admin → Event pipeline (`kafka:on/off`, partition·offset satırları).
+- **Neden Kafka burada?** Checkout'u yan etkilerinden (denetim kaydı,
+  bildirim, analitik) ayırmak: aynı event'i farklı consumer'lar farklı hızlarda
+  işleyebilir, replay edilebilir. 6 ürünlük demo için overkill — öğretici
+  bilinçli tercih; "doğru araç" tartışmasının iki yüzünü görmek için.
 
 ### Deploy'da öğrenilen tuzaklar (Vercel + Turbopack + Prisma)
 

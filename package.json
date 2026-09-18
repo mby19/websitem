@@ -7,12 +7,14 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "kafka:consume": "tsx scripts/kafka-consumer.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.3",
     "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "^6.19.3",
+    "@upstash/kafka": "^1.3.5",
     "bcryptjs": "^3.0.3",
     "dotenv": "^17.4.2",
     "next": "16.3.4",

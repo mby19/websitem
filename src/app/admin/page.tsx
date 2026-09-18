@@ -6,7 +6,8 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/prisma";
 import { isAdmin } from "@/lib/admin";
 import { formatPrice } from "@/lib/format";
-import { createProductAction, updateProductAction, deleteProductAction } from "./actions";
+import { createProductAction, updateProductAction, deleteProductAction, consumeTickAction } from "./actions";
+import { KAFKA_ENABLED, KAFKA_TOPIC } from "@/lib/kafka";
 
 export const dynamic = "force-dynamic";
 
@@ -21,13 +22,14 @@ export default async function AdminPage({
   if (!(await isAdmin())) redirect("/giris");
   const { ok, err } = await searchParams;
 
-  const [products, orders] = await Promise.all([
+  const [products, orders, events] = await Promise.all([
     db.product.findMany({ orderBy: { id: "asc" } }),
     db.order.findMany({
       orderBy: { id: "desc" },
       take: 10,
       include: { items: { include: { product: { select: { name: true, emoji: true } } } } },
     }),
+    db.eventLog.findMany({ orderBy: { id: "desc" }, take: 8 }),
   ]);
 
   return (
@@ -123,6 +125,46 @@ export default async function AdminPage({
                 ) : (
                   <span className="text-amber">{order.status}</span>
                 )}
+              </p>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* ─── KAFKA PIPELINE ─── */}
+      <div>
+        <h2 className="mb-1 text-xl font-bold">
+          Event pipeline{" "}
+          <span className={"font-mono text-sm " + (KAFKA_ENABLED ? "text-diff-add" : "text-amber")}>
+            kafka:{KAFKA_ENABLED ? "on" : "off"}
+          </span>
+        </h2>
+        <p className="mb-3 text-sm text-neutral-400">
+          Producer (checkout) → <span className="font-mono">{KAFKA_TOPIC}</span> topic'i → consumer
+          (bu panel + <span className="font-mono">npm run kafka:consume</span> döngüsü). Her satırın
+          gerçek Kafka koordinatı: partition · offset.
+        </p>
+        <form action={consumeTickAction} className="mb-3">
+          <button
+            type="submit"
+            disabled={!KAFKA_ENABLED}
+            className="rounded bg-amber px-4 py-2 font-mono text-sm font-medium text-neutral-950 hover:bg-amber-soft disabled:bg-neutral-800 disabled:text-neutral-500"
+          >
+            consume
+          </button>
+        </form>
+        {events.length === 0 ? (
+          <p className="font-mono text-sm text-neutral-400">
+            EventLog boş — checkout yap, sonra consume ile olayları kayda geçir.
+          </p>
+        ) : (
+          <div className="rounded-md bg-neutral-950 p-4 font-mono text-sm leading-relaxed">
+            {events.map((event) => (
+              <p key={event.id}>
+                <span className="text-neutral-400">
+                  [{event.topic} · p{event.partition} · off{event.offset}]
+                </span>{" "}
+                <span className="text-diff-add">{event.type}</span>
               </p>
             ))}
           </div>

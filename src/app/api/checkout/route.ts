@@ -5,6 +5,7 @@
 //  sadece bu dosyanın başına gerçek ödeme adımı eklenir.)
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
+import { publishOrderCreated } from "@/lib/kafka";
 
 // Gelen gövdenin tipi — runtime'da yine doğrulayacağız
 type CheckoutBody = {
@@ -73,7 +74,7 @@ export async function POST(request: NextRequest) {
           })),
         },
       },
-      include: { items: true },
+      include: { items: { include: { product: { select: { name: true } } } } },
     });
 
     // Stokları düş: her ürün için tek UPDATE (aynı ürün iki satırdaysa birikir)
@@ -87,5 +88,16 @@ export async function POST(request: NextRequest) {
     return created;
   });
 
-  return NextResponse.json({ orderId: order.id }, { status: 201 });
+  // Kafka producer: sipariş DB'ye yazıldıktan SONRA best-effort event.
+  // Transaction içinde değil — event katmanı yan etki, ödeme yolunu bloklamaz.
+  const itemCount = order.items.reduce((sum, item) => sum + item.quantity, 0);
+  const firstName = order.items[0]?.product?.name ?? "ürün";
+  const published = await publishOrderCreated({
+    id: order.id,
+    totalCents: order.totalCents,
+    itemCount,
+    firstName,
+  });
+
+  return NextResponse.json({ orderId: order.id, eventPublished: published }, { status: 201 });
 }
