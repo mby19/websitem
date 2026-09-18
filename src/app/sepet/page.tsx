@@ -68,19 +68,22 @@ export default function CartPage() {
   }, [lines.map((l) => l.productId).join(",")]); // string anahtar: sadece id listesi değişince yeniden çek
 
   if (loading && lines.length > 0) {
-    return <p className="text-neutral-500">Sepet yükleniyor…</p>;
+    return <p className="font-mono text-sm text-neutral-400">sepet yükleniyor…</p>;
   }
 
   if (lines.length === 0) {
     return (
-      <section className="text-center py-12">
-        <h1 className="text-2xl font-bold mb-2">Sepetin boş</h1>
-        <p className="text-neutral-500 mb-4">Ürünlere göz atarak başla.</p>
-        <Link href="/" className="text-blue-600 hover:underline">
-          → Ürünlere git
+      <section className="py-12 text-center">
+        <h1 className="mb-2 text-2xl font-bold">Sepetin boş</h1>
+        <p className="mb-4 text-neutral-400">Ürünlere göz atarak başla.</p>
+        <Link
+          href="/"
+          className="inline-block rounded bg-amber px-4 py-2 text-sm font-medium text-neutral-950 hover:bg-amber-soft"
+        >
+          → Vitrine git
         </Link>
-        <p className="mt-8 text-xs text-neutral-400">
-          Not: misafir siparişleri yalnızca bu cihazda saklanır; hesapla kalıcı olur.
+        <p className="mt-8 font-mono text-xs text-neutral-400">
+          not: misafir siparişleri yalnızca bu cihazda saklanır; hesapla kalıcı olur.
         </p>
       </section>
     );
@@ -90,64 +93,77 @@ export default function CartPage() {
 
   return (
     <section>
-      <h1 className="mb-6 text-2xl font-bold">Sepetin ({lines.length} kalem)</h1>
-      <div className="space-y-3">
+      <h1 className="mb-6 text-2xl font-bold">
+        Sepet <span className="font-mono text-lg text-neutral-400">({lines.length} kalem)</span>
+      </h1>
+      <div className="space-y-2">
         {lines.map((line) => {
           const product = products.get(line.productId);
           if (!product) return null; // DB'de artık yoksa çizme
           return (
             <div
               key={line.productId}
-              className="flex items-center gap-4 rounded-lg border border-neutral-200 p-3 dark:border-neutral-800"
+              className="flex items-center gap-4 rounded-md bg-neutral-900/60 p-3 transition-colors hover:bg-neutral-900"
             >
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded bg-neutral-100 text-2xl dark:bg-neutral-800">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded bg-neutral-950 text-2xl">
                 {product.emoji}
               </div>
               <div className="flex-1">
                 <Link href={`/urun/${line.productId}`} className="font-semibold hover:underline">
                   {product.name}
                 </Link>
-                <p className="text-sm text-neutral-500">{formatPrice(product.priceCents)} / adet</p>
+                <p className="font-mono text-sm text-neutral-400">{formatPrice(product.priceCents)} / adet</p>
               </div>
-              {/* Adet seçici: - [adet] + */}
-              <div className="flex items-center gap-2">
+              {/* Adet seçici: − [adet] + */}
+              <div className="flex items-center gap-2 font-mono">
                 <button
-                  className="h-8 w-8 rounded border border-neutral-300 hover:bg-neutral-100 dark:border-neutral-700 dark:hover:bg-neutral-800"
+                  className="h-8 w-8 rounded bg-neutral-800 hover:bg-neutral-700"
                   onClick={() => setQuantity(line.productId, line.quantity - 1)}
                   aria-label="Azalt"
                 >
                   −
                 </button>
-                <span className="w-8 text-center font-medium">{line.quantity}</span>
+                <span className="w-8 text-center">{line.quantity}</span>
                 <button
-                  className="h-8 w-8 rounded border border-neutral-300 hover:bg-neutral-100 dark:border-neutral-700 dark:hover:bg-neutral-800"
+                  className="h-8 w-8 rounded bg-neutral-800 hover:bg-neutral-700"
                   onClick={() => setQuantity(line.productId, line.quantity + 1)}
                   aria-label="Artır"
                 >
                   +
                 </button>
               </div>
-              <span className="w-24 text-right font-bold">{formatPrice(product.priceCents * line.quantity)}</span>
-              <button className="text-neutral-400 hover:text-red-500" onClick={() => remove(line.productId)} aria-label="Kaldır">
+              <span className="w-24 text-right font-mono font-medium">
+                {formatPrice(product.priceCents * line.quantity)}
+              </span>
+              <button className="text-neutral-400 hover:text-diff-del" onClick={() => remove(line.productId)} aria-label="Kaldır">
                 ✕
               </button>
             </div>
           );
         })}
-      {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
+      </div>
+
+      <div className="mt-6 flex items-center justify-between">
+        <span className="font-mono text-lg">
+          toplam: <strong>{formatPrice(total)}</strong>
+        </span>
         <div className="flex gap-3">
-          <button className="rounded border border-neutral-300 px-3 py-1.5 text-sm hover:bg-neutral-100 dark:border-neutral-700 dark:hover:bg-neutral-800" onClick={clear}>
-            Sepeti Boşalt
+          <button
+            className="rounded bg-neutral-800 px-3 py-1.5 font-mono text-sm hover:bg-neutral-700"
+            onClick={clear}
+          >
+            boşalt
           </button>
           <button
-            className="rounded bg-blue-600 px-4 py-1.5 font-medium text-white hover:bg-blue-700 disabled:bg-neutral-400"
+            className="rounded bg-amber px-4 py-1.5 font-mono text-sm font-medium text-neutral-950 hover:bg-amber-soft disabled:bg-neutral-800 disabled:text-neutral-500"
             onClick={checkout}
             disabled={checkingOut}
           >
-            {checkingOut ? "İşleniyor…" : "Ödemeye Geç"}
+            {checkingOut ? "işleniyor…" : "checkout"}
           </button>
         </div>
       </div>
+      {error && <p className="mt-2 font-mono text-sm text-diff-del">{error}</p>}
     </section>
   );
 }

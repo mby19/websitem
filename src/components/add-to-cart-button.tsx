@@ -9,7 +9,7 @@ export function AddToCartButton({ productId }: { productId: number }) {
 
   return (
     <button
-      className="rounded bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 disabled:bg-neutral-400"
+      className="rounded bg-amber px-3 py-1.5 text-sm font-medium text-neutral-950 hover:bg-amber-soft disabled:bg-neutral-800 disabled:text-neutral-500"
       onClick={() => {
         add(productId);
         // Kısa "eklendi" geri bildirimi — UX detayı
@@ -17,7 +17,7 @@ export function AddToCartButton({ productId }: { productId: number }) {
         setTimeout(() => setAdded(false), 1200);
       }}
     >
-      {added ? "✓ Eklendi" : "Sepete Ekle"}
+      {added ? "✓ eklendi" : "sepete ekle"}
     </button>
   );
 }

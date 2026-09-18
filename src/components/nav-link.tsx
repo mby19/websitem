@@ -19,12 +19,16 @@ export function NavLink({ href, children }: NavLinkProps) {
     <Link
       href={href}
       className={
-        "border-b-2 pb-0.5 transition-colors hover:underline " +
+        // Aktif: amber nokta + ivory metin; pasif: gri. Kutu yok — alt çizgi bile yok.
+        "transition-colors " +
         (active
-          ? "border-neutral-400 dark:border-neutral-500"
-          : "border-transparent hover:border-neutral-300 dark:hover:border-neutral-600")
+          ? "text-foreground"
+          : "text-neutral-500 hover:text-neutral-300")
       }
     >
+      <span className="mr-0.5 inline-block h-1.5 w-1.5 align-middle">
+        {active ? <span className="block h-1.5 w-1.5 rounded-full bg-amber" /> : null}
+      </span>
       {children}
     </Link>
   );

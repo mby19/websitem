@@ -4,6 +4,7 @@
 // "/"'e yönlendirilir (hard navigation). Server action kullanmıyoruz çünkü
 // signIn redirect'i client yönlendirmesiyle yarışıyor.
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 type AuthFormProps = { onReady: (csrfToken: string) => void };
 
@@ -30,7 +31,10 @@ export default function LoginPage() {
 
   return (
     <section className="mx-auto max-w-sm">
-      <h1 className="mb-6 text-2xl font-bold">Giriş Yap</h1>
+      <p className="font-mono text-sm text-neutral-500">
+        websitem<span className="text-neutral-700">/</span>signin
+      </p>
+      <h1 className="mt-3 mb-6 text-2xl font-bold">Giriş yap</h1>
       <form
         className="space-y-4"
         method="post"
@@ -43,24 +47,38 @@ export default function LoginPage() {
         }}
       >
         <input type="hidden" name="csrfToken" value={csrfToken ?? ""} />
-        <input type="hidden" name="callbackUrl" value={typeof window !== "undefined" ? window.location.origin + "/" : "/"} />
+        <input type="hidden" name="callbackUrl" value="/" />
         <div>
-          <label htmlFor="email" className="mb-1 block text-sm font-medium">E-posta</label>
-          <input id="email" name="email" type="email" required autoComplete="email"
-            className="w-full rounded border border-neutral-300 px-3 py-2 dark:border-neutral-700 dark:bg-neutral-900" />
+          <label htmlFor="email" className="mb-1 block font-mono text-xs text-neutral-500">E-posta</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            required
+            autoComplete="email"
+            className="w-full rounded bg-neutral-900/60 px-3 py-2 text-foreground outline-none focus:ring-2 focus:ring-amber"
+          />
         </div>
         <div>
-          <label htmlFor="password" className="mb-1 block text-sm font-medium">Şifre</label>
-          <input id="password" name="password" type="password" required autoComplete="current-password"
-            className="w-full rounded border border-neutral-300 px-3 py-2 dark:border-neutral-700 dark:bg-neutral-900" />
+          <label htmlFor="password" className="mb-1 block font-mono text-xs text-neutral-500">Şifre</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            required
+            autoComplete="current-password"
+            className="w-full rounded bg-neutral-900/60 px-3 py-2 text-foreground outline-none focus:ring-2 focus:ring-amber"
+          />
         </div>
-        {error && <p className="text-sm text-red-500">{error}</p>}
-        <button type="submit"
-          className="w-full rounded bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700 disabled:bg-neutral-400">
-          Giriş Yap
+        {error && <p className="font-mono text-sm text-diff-del">{error}</p>}
+        <button
+          type="submit"
+          className="w-full rounded bg-amber px-4 py-2 font-medium text-neutral-950 hover:bg-amber-soft disabled:bg-neutral-800 disabled:text-neutral-500"
+        >
+          signin
         </button>
-        <p className="text-center text-sm text-neutral-500">
-          Hesabın yok mu? <a href="/kayit" className="text-blue-600 hover:underline">Kayıt ol</a>
+        <p className="text-center font-mono text-xs text-neutral-500">
+          hesabın yok mu? <Link href="/kayit" className="text-amber-soft hover:underline">register</Link>
         </p>
       </form>
     </section>

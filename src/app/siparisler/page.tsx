@@ -19,33 +19,33 @@ export default function OrdersPage() {
     }
   }, []);
 
-
   return (
     <section>
-      <h1 className="mb-2 text-2xl font-bold">Siparişlerim</h1>
-      <p className="mb-6 text-sm text-neutral-500 dark:text-neutral-400">
-        Misafir siparişleri yalnızca bu cihazda saklanır; hesapla kalıcı olur.
+      <h1 className="mb-2 text-2xl font-bold">orders</h1>
+      <p className="mb-6 font-mono text-sm text-neutral-400">
+        misafir siparişleri yalnızca bu cihazda saklanır; hesapla kalıcı olur.
       </p>
       {orderIds.length === 0 ? (
-        <div className="rounded-lg border border-neutral-200 p-6 text-center dark:border-neutral-800">
-          <p className="text-neutral-500 mb-3">Henüz siparişin yok.</p>
+        <div className="rounded-md bg-neutral-900/60 p-6 text-center">
+          <p className="text-neutral-400 mb-3 font-mono text-sm">transcript boş — henüz sipariş yok</p>
           <Link
             href="/"
-            className="inline-block rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+            className="inline-block rounded bg-amber px-4 py-2 text-sm font-medium text-neutral-950 hover:bg-amber-soft"
           >
-            Alışverişe başla
+            alışverişe başla
           </Link>
         </div>
       ) : (
-        <ul className="space-y-2">
+        <div className="rounded-md bg-neutral-950 p-4 font-mono text-sm leading-relaxed">
           {orderIds.map((id) => (
-            <li key={id}>
-              <Link href={`/siparis/${id}`} className="text-blue-600 hover:underline">
-                Sipariş #{id}
+            <p key={id}>
+              <span className="text-amber">▸</span>{" "}
+              <Link href={`/siparis/${id}`} className="text-amber-soft hover:underline">
+                order #{id}
               </Link>
-            </li>
+            </p>
           ))}
-        </ul>
+        </div>
       )}
     </section>
   );

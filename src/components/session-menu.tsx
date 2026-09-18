@@ -36,28 +36,27 @@ export function SessionMenu() {
 
   if (!loaded) {
     // Session gelene kadar sabit genişlikte iskelet: layout kayması (CLS) yok
-    return <span className="inline-block h-4 w-24 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700" />;
+    return <span className="inline-block h-4 w-20 animate-pulse rounded bg-neutral-800" />;
   }
 
   if (!user) {
     return (
       <div className="flex gap-3">
-        <Link href="/giris" className="hover:underline">Giriş</Link>
-        <Link href="/kayit" className="hover:underline">Kayıt</Link>
+        <Link href="/giris" className="text-neutral-500 hover:text-neutral-300">signin</Link>
+        <Link href="/kayit" className="text-neutral-500 hover:text-neutral-300">register</Link>
       </div>
     );
   }
 
   return (
     <div className="flex items-center gap-3">
-      <span className="text-sm">{user.name || user.email}</span>
-      {/* Çıkış: form post → Auth.js endpoint'i cookie'yi siler ve callbackUrl'e döner.
-          Dönen sayfada bu component yeniden mount olur → "Giriş/Kayıt" görünür. */}
+      <span className="text-neutral-300">{user.name || user.email}</span>
+      {/* Çıkış: form post → Auth.js endpoint'i cookie'yi siler ve callbackUrl'e döner. */}
       <form method="post" action="/api/auth/signout">
         <input type="hidden" name="csrfToken" value={csrfToken ?? ""} />
         <input type="hidden" name="callbackUrl" value="/" />
-        <button type="submit" className="text-sm text-neutral-500 hover:text-red-500">
-          Çıkış
+        <button type="submit" className="text-neutral-500 hover:text-diff-del">
+          signout
         </button>
       </form>
     </div>

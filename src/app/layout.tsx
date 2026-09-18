@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "WebSim Mağaza",
-  description: "Öğrenme amaçlı e-ticaret projesi",
+  description: "Gerçekten çalışan demo e-ticaret — transactional checkout, fiyat koruması",
 };
 
 export default function RootLayout({
@@ -32,30 +32,31 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {/* CartProvider: sepet state'ini tüm sayfalara sağlar */}
         <CartProvider>
-          <header className="border-b border-neutral-200 dark:border-neutral-800">
+          {/* Header: konsol satırı — marka + mono durum + nav */}
+          <header className="border-b border-neutral-900">
             <nav className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-y-2 px-4 py-3">
-              <Link href="/" className="whitespace-nowrap text-base font-bold sm:text-lg">
-                WebSim Mağaza
+              <Link href="/" className="whitespace-nowrap text-sm font-semibold">
+                <span className="text-amber">▸</span> WebSim Mağaza
               </Link>
-              <div className="flex items-center gap-3 sm:gap-4">
-                <NavLink href="/">Ürünler</NavLink>
-                <NavLink href="/siparisler">Siparişler</NavLink>
+              <div className="flex items-center gap-3 sm:gap-4 font-mono text-sm">
+                <NavLink href="/">vitrin</NavLink>
+                <NavLink href="/siparisler">orders</NavLink>
                 <NavLink href="/sepet">
-                  Sepet <CartBadge />
+                  sepet <CartBadge />
                 </NavLink>
                 <SessionMenu />
               </div>
             </nav>
           </header>
           <main className="mx-auto max-w-5xl px-4 py-8">{children}</main>
-          <footer className="border-t border-neutral-200 py-6 text-center text-sm text-neutral-500 dark:border-neutral-800">
-            <p className="text-xs">
+          <footer className="border-t border-neutral-900 py-6 text-center font-mono text-xs text-neutral-400">
+            <p>
               transactional checkout · fiyat koruması · snapshot fiyatlaması —{" "}
               <a
                 href="https://github.com/mby19/websitem"
                 target="_blank"
                 rel="noreferrer"
-                className="underline underline-offset-2"
+                className="underline underline-offset-2 hover:text-neutral-300"
               >
                 github.com/mby19/websitem
               </a>

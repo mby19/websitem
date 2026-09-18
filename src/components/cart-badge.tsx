@@ -11,7 +11,7 @@ export function CartBadge() {
     // key: totalItems her değiştiğinde element yeniden mount olur → animasyon yeniden oynar
     <span
       key={totalItems}
-      className="inline-block min-w-5 rounded-full bg-blue-600 px-2 py-0.5 text-center text-xs font-mono text-white animate-[badge-pulse_0.3s_ease-out]"
+      className="inline-block min-w-5 rounded-full bg-amber px-2 py-0.5 text-center text-xs font-mono text-neutral-950 animate-[badge-pulse_0.3s_ease-out]"
     >
       {totalItems}
     </span>

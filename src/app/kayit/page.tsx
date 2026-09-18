@@ -60,30 +60,33 @@ export default function RegisterPage() {
 
   return (
     <section className="mx-auto max-w-sm">
-      <h1 className="mb-6 text-2xl font-bold">Kayıt Ol</h1>
+      <p className="font-mono text-sm text-neutral-500">
+        websitem<span className="text-neutral-700">/</span>register
+      </p>
+      <h1 className="mt-3 mb-6 text-2xl font-bold">Kayıt ol</h1>
       <form className="space-y-4" onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="name" className="mb-1 block text-sm font-medium">Ad</label>
+          <label htmlFor="name" className="mb-1 block font-mono text-xs text-neutral-500">Ad</label>
           <input id="name" name="name" type="text" autoComplete="name"
-            className="w-full rounded border border-neutral-300 px-3 py-2 dark:border-neutral-700 dark:bg-neutral-900" />
+            className="w-full rounded bg-neutral-900/60 px-3 py-2 text-foreground outline-none focus:ring-2 focus:ring-amber" />
         </div>
         <div>
-          <label htmlFor="email" className="mb-1 block text-sm font-medium">E-posta</label>
+          <label htmlFor="email" className="mb-1 block font-mono text-xs text-neutral-500">E-posta</label>
           <input id="email" name="email" type="email" required autoComplete="email"
-            className="w-full rounded border border-neutral-300 px-3 py-2 dark:border-neutral-700 dark:bg-neutral-900" />
+            className="w-full rounded bg-neutral-900/60 px-3 py-2 text-foreground outline-none focus:ring-2 focus:ring-amber" />
         </div>
         <div>
-          <label htmlFor="password" className="mb-1 block text-sm font-medium">Şifre</label>
+          <label htmlFor="password" className="mb-1 block font-mono text-xs text-neutral-500">Şifre</label>
           <input id="password" name="password" type="password" required minLength={6} autoComplete="new-password"
-            className="w-full rounded border border-neutral-300 px-3 py-2 dark:border-neutral-700 dark:bg-neutral-900" />
+            className="w-full rounded bg-neutral-900/60 px-3 py-2 text-foreground outline-none focus:ring-2 focus:ring-amber" />
         </div>
-        {error && <p className="text-sm text-red-500">{error}</p>}
+        {error && <p className="font-mono text-sm text-diff-del">{error}</p>}
         <button type="submit" disabled={busy || !csrfToken}
-          className="w-full rounded bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700 disabled:bg-neutral-400">
-          {busy ? "Kayıt olunuyor…" : "Kayıt Ol"}
+          className="w-full rounded bg-amber px-4 py-2 font-medium text-neutral-950 hover:bg-amber-soft disabled:bg-neutral-800 disabled:text-neutral-500">
+          {busy ? "kayıt olunuyor…" : "register"}
         </button>
-        <p className="text-center text-sm text-neutral-500">
-          Zaten hesabın var mı? <a href="/giris" className="text-blue-600 hover:underline">Giriş yap</a>
+        <p className="text-center font-mono text-xs text-neutral-500">
+          zaten hesabın var mı? <a href="/giris" className="text-amber-soft hover:underline">signin</a>
         </p>
       </form>
     </section>

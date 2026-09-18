@@ -1,5 +1,5 @@
 // SİPARİŞ DETAY SAYFASI — /siparis/[id]
-// Siparişin kalemleri ve toplamı. Snapshot fiyatlardan gösterim.
+// Transcript dilinde: sipariş bir commit kaydı gibi okunur.
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/prisma";
@@ -16,38 +16,43 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
   const order = await db.order.findUnique({
     where: { id: orderId },
     include: {
-      items: { include: { product: { select: { name: true } } } },
+      items: { include: { product: { select: { name: true, emoji: true } } } },
     },
   });
   if (!order) notFound();
 
   return (
     <article className="mx-auto max-w-lg">
-      <div className="mb-6 text-center">
-        <div className="text-5xl mb-2">✅</div>
-        <h1 className="text-2xl font-bold">Siparişin alındı!</h1>
-        <p className="text-neutral-500">Sipariş No: #{order.id}</p>
+      <div className="mb-6 font-mono">
+        <p className="text-sm text-neutral-500">
+          <span className="text-amber">▸</span> order <span className="text-amber-soft">#{order.id}</span>
+        </p>
+        <h1 className="mt-1 font-sans text-2xl font-bold">Siparişin alındı</h1>
       </div>
 
-      <div className="rounded-lg border border-neutral-200 p-4 dark:border-neutral-800">
+      <div className="rounded-md bg-neutral-950 p-4 font-mono text-sm leading-relaxed">
         {order.items.map((item) => (
-          <div key={item.id} className="flex items-center justify-between py-2">
-            <span>
-              {item.product.name} <span className="text-neutral-500">× {item.quantity}</span>
-            </span>
-            <span className="font-medium">{formatPrice(item.priceCents * item.quantity)}</span>
-          </div>
+          <p key={item.id}>
+            <span className="text-diff-add">+</span>{" "}
+            <span className="text-neutral-300">
+              {item.product.emoji} {item.product.name}
+            </span>{" "}
+            <span className="text-neutral-400">× {item.quantity}</span>{" "}
+            <span className="text-neutral-400">{formatPrice(item.priceCents * item.quantity)}</span>
+          </p>
         ))}
-        <div className="mt-3 flex items-center justify-between border-t border-neutral-200 pt-3 font-bold dark:border-neutral-800">
-          <span>Toplam</span>
-          <span>{formatPrice(order.totalCents)}</span>
-        </div>
-        <p className="mt-2 text-xs text-neutral-400">Durum: {order.status}</p>
+        <p className="mt-3 border-t border-neutral-900 pt-3 font-sans text-base font-bold">
+          <span className="font-mono text-xs font-normal text-neutral-400">TOPLAM </span>
+          {formatPrice(order.totalCents)}
+        </p>
+        <p className="mt-2 text-xs text-diff-add">
+          <span className="text-neutral-400">status: </span>{order.status}
+        </p>
       </div>
 
       <div className="mt-6 text-center">
-        <Link href="/" className="text-blue-600 hover:underline">
-          ← Alışverişe devam et
+        <Link href="/" className="font-mono text-sm text-neutral-400 hover:text-neutral-300">
+          ← vitrin
         </Link>
       </div>
     </article>

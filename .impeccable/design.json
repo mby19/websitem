@@ -1,14 +1,41 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-15T20:15:00.000Z",
+  "generatedAt": "2026-09-18T00:00:00.000Z",
   "title": "Design System: WebSim Mağaza",
   "extensions": {
     "colorMeta": {
-      "primary": { "role": "primary", "displayName": "Butik Mavi", "canonical": "#2563eb" },
-      "surface-alt": { "role": "neutral", "displayName": "Beton Nötr", "canonical": "#f5f5f5" },
-      "ink": { "role": "neutral", "displayName": "İspirto Mürekkep", "canonical": "#171717" },
-      "line": { "role": "neutral", "displayName": "Kül Çizgi", "canonical": "#e5e5e5" }
+      "amber": { "role": "primary", "displayName": "Sinyal Amber", "canonical": "#ffb224", "tonalRamp": ["#3d2504", "#6b4108", "#995d0c", "#c67a10", "#e89617", "#ffb224", "#ffcd63", "#ffe0a3"] },
+      "amber-soft": { "role": "primary", "displayName": "Amber Yumuşak", "canonical": "#ffcd63" },
+      "diff-add": { "role": "tertiary", "displayName": "Diff Ekle", "canonical": "#4ade80", "tonalRamp": ["#052e16", "#0a4a24", "#0f6632", "#15803d", "#22c55e", "#4ade80", "#86efac", "#bbf7d0"] },
+      "diff-del": { "role": "tertiary", "displayName": "Diff Sil", "canonical": "#f87171", "tonalRamp": ["#450a0a", "#7f1d1d", "#991b1b", "#b91c1c", "#ef4444", "#f87171", "#fca5a5", "#fecaca"] },
+      "background": { "role": "neutral", "displayName": "Sahne Zemin", "canonical": "#0a0a0a" },
+      "surface-1": { "role": "neutral", "displayName": "Yüzey-1", "canonical": "#141414" },
+      "panel": { "role": "neutral", "displayName": "Panel", "canonical": "#171717" },
+      "surface-2": { "role": "neutral", "displayName": "Yüzey-2", "canonical": "#1c1c1c" },
+      "surface-3": { "role": "neutral", "displayName": "Yüzey-3", "canonical": "#242424" },
+      "control": { "role": "neutral", "displayName": "Kontrol", "canonical": "#262626" },
+      "control-hover": { "role": "neutral", "displayName": "Kontrol Hover", "canonical": "#404040" },
+      "panel-veil": { "role": "neutral", "displayName": "Panel Perde", "canonical": "rgba(23, 23, 23, 0.6)" },
+      "foreground": { "role": "neutral", "displayName": "İvory", "canonical": "#fafafa" },
+      "text-dim": { "role": "neutral", "displayName": "Yazı Soluk", "canonical": "#d4d4d4" },
+      "text-muted": { "role": "neutral", "displayName": "Yazı Muted", "canonical": "#a3a3a3" },
+      "text-faint": { "role": "neutral", "displayName": "Yazı Faint", "canonical": "#737373" },
+      "hairline": { "role": "neutral", "displayName": "Hairline", "canonical": "#171717" }
     },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Yalnız ana sayfa hero'su." },
+      "headline": { "displayName": "Headline", "purpose": "Sayfa başlıkları." },
+      "title": { "displayName": "Title", "purpose": "Bölüm ve kart başlıkları." },
+      "body": { "displayName": "Body", "purpose": "Açıklama cümleleri; Geist Sans." },
+      "label": { "displayName": "Label", "purpose": "Transcript, nav, fiyat, buton mono metinleri." },
+      "micro": { "displayName": "Micro", "purpose": "Form etiketleri, footer, rozet sayısı." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "caret-blink", "value": "1.1s step-end infinite", "purpose": "Transcriptin tek nabzı; 0.55em×1em amber blok." },
+      { "name": "badge-pulse", "value": "0.3s ease-out", "purpose": "Sepet rozetinin adet değişim nabzı (0.6→1.15→1 scale)." },
+      { "name": "line-in", "value": "0.3s ease-out", "purpose": "Yeni transcript satırının -4px'den düşüşü." }
+    ],
     "breakpoints": [
       { "name": "sm", "value": "640px" },
       { "name": "lg", "value": "1024px" }
@@ -19,29 +46,100 @@
       "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Satın alma yolundaki tek aksan: Sepete Ekle, Ödemeye Geç.",
-      "html": "<button class=\"ds-btn-primary\">Sepete Ekle</button>",
-      "css": ".ds-btn-primary { background: #2563eb; color: #fff; padding: 6px 12px; border-radius: 4px; font-size: 0.875rem; font-weight: 500; border: none; transition: background 0.15s; } .ds-btn-primary:hover { background: #1d4ed8; } .ds-btn-primary:disabled { background: #d4d4d4; }"
+      "description": "Satın alma yolundaki tek aksan: sepete ekle, checkout, hero CTA.",
+      "html": "<button class=\"ds-btn-primary\">sepete ekle</button>",
+      "css": ".ds-btn-primary { background: #ffb224; color: #0a0a0a; padding: 6px 12px; border-radius: 4px; font-size: 0.875rem; font-weight: 500; border: none; cursor: pointer; transition: background 0.15s; } .ds-btn-primary:hover { background: #ffcd63; } .ds-btn-primary:focus-visible { outline: 2px solid #ffb224; outline-offset: 2px; } .ds-btn-primary:disabled { background: #262626; color: #737373; }"
     },
     {
-      "name": "Ghost Button",
+      "name": "Secondary Button",
       "kind": "button",
-      "refersTo": "button-ghost",
-      "description": "İkincil eylem: çizgili, yüksüz.",
-      "html": "<button class=\"ds-btn-ghost\">Sepeti Boşalt</button>",
-      "css": ".ds-btn-ghost { background: transparent; color: #171717; padding: 6px 12px; border-radius: 4px; font-size: 0.875rem; border: 1px solid #d4d4d4; transition: background 0.15s; } .ds-btn-ghost:hover { background: #f5f5f5; }"
+      "refersTo": "button-secondary",
+      "description": "İkincil kontrol: boşalt, ± steppers. Mono konuşur, hover'da ton adımı.",
+      "html": "<button class=\"ds-btn-secondary\">boşalt</button>",
+      "css": ".ds-btn-secondary { background: #262626; color: #fafafa; padding: 6px 12px; border-radius: 4px; font-family: var(--font-geist-mono), monospace; font-size: 0.875rem; border: none; cursor: pointer; transition: background 0.15s; } .ds-btn-secondary:hover { background: #404040; }"
+    },
+    {
+      "name": "Text Destructive",
+      "kind": "button",
+      "refersTo": "diff-del",
+      "description": "Çıplak negatif eylem: signout, sepet satırı kaldırma ✕.",
+      "html": "<button class=\"ds-btn-destructive\">signout</button>",
+      "css": ".ds-btn-destructive { background: transparent; color: #737373; border: none; font-size: 0.875rem; cursor: pointer; padding: 0; transition: color 0.15s; } .ds-btn-destructive:hover { color: #f87171; }"
+    },
+    {
+      "name": "Input",
+      "kind": "input",
+      "refersTo": "input-text",
+      "description": "Form alanı: çerçevesiz, perde zeminli; odak her zaman amber ring.",
+      "html": "<input class=\"ds-input\" type=\"email\" placeholder=\"e-posta\" />",
+      "css": ".ds-input { background: rgba(23, 23, 23, 0.6); color: #fafafa; padding: 8px 12px; border-radius: 4px; font-size: 0.875rem; border: none; width: 100%; outline: none; } .ds-input:focus { box-shadow: 0 0 0 2px #ffb224; } .ds-input::placeholder { color: #737373; }"
+    },
+    {
+      "name": "Cart Badge",
+      "kind": "chip",
+      "refersTo": "cart-badge",
+      "description": "Sepet adedi: amber zemin, pulse ile doğar.",
+      "html": "<span class=\"ds-badge\">3</span>",
+      "css": ".ds-badge { display: inline-block; min-width: 20px; background: #ffb224; color: #0a0a0a; border-radius: 9999px; padding: 2px 8px; text-align: center; font-family: var(--font-geist-mono), monospace; font-size: 0.75rem; animation: ds-badge-pulse 0.3s ease-out; } @keyframes ds-badge-pulse { 0% { transform: scale(0.6); opacity: 0.4; } 60% { transform: scale(1.15); } 100% { transform: scale(1); opacity: 1; } }"
+    },
+    {
+      "name": "Transcript Panel",
+      "kind": "custom",
+      "refersTo": "transcript-panel",
+      "description": "Mağazanın kanıt katmanı: gerçek son siparişler mono satırlarla, amber caret nabzıyla.",
+      "html": "<div class=\"ds-transcript\"><p class=\"ds-line\"><span class=\"ds-caret-glyph\">▸</span> order <span class=\"ds-id\">#42</span> <span class=\"ds-sep\">·</span> Mekanik Klavye <span class=\"ds-sep\">·</span> <span class=\"ds-price\">₺1.249,00</span> <span class=\"ds-paid\">PAID</span> <span class=\"ds-time\">14:32</span></p><p class=\"ds-caret\"><span class=\"ds-caret-block\"></span></p></div>",
+      "css": ".ds-transcript { background: #171717; border-radius: 6px; padding: 16px; font-family: var(--font-geist-mono), monospace; font-size: 0.875rem; line-height: 1.625; overflow-x: auto; } .ds-line { padding-left: 20px; text-indent: -20px; } .ds-caret-glyph { color: #ffb224; } .ds-id { color: #ffcd63; } .ds-sep { color: #737373; } .ds-price { color: #fafafa; } .ds-paid { color: #4ade80; } .ds-time { color: #a3a3a3; } .ds-caret { color: #ffb224; margin-top: 4px; } .ds-caret-block { display: inline-block; width: 0.55em; height: 1em; vertical-align: text-bottom; background: #ffb224; animation: ds-caret-blink 1.1s step-end infinite; } @keyframes ds-caret-blink { 0%, 55% { opacity: 1; } 56%, 100% { opacity: 0; } }"
+    },
+    {
+      "name": "Product Card",
+      "kind": "card",
+      "refersTo": "product-card",
+      "description": "Vitrin kartı: perde zemin, hover'da Panel'e kararma; görsel kuyusu en derin zeminde emoji placeholder.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-well\">📦</div><h3 class=\"ds-name\">Mekanik Klavye</h3><p class=\"ds-desc\">Hot-swap tuş takımı, USB-C.</p><div class=\"ds-row\"><span class=\"ds-price\">₺1.249,00</span><button class=\"ds-btn-primary\">sepete ekle</button></div></div>",
+      "css": ".ds-card { background: rgba(23, 23, 23, 0.6); border-radius: 6px; padding: 16px; display: flex; flex-direction: column; transition: background 0.15s; font-family: var(--font-geist-sans), sans-serif; } .ds-card:hover { background: #171717; } .ds-well { height: 144px; display: flex; align-items: center; justify-content: center; border-radius: 4px; background: #0a0a0a; font-size: 3.75rem; } .ds-name { margin-top: 12px; font-weight: 600; color: #fafafa; } .ds-desc { margin: 8px 0 12px; font-size: 0.875rem; color: #a3a3a3; } .ds-row { display: flex; align-items: center; justify-content: space-between; margin-top: auto; } .ds-price { font-family: var(--font-geist-mono), monospace; font-weight: 500; color: #fafafa; } .ds-btn-primary { background: #ffb224; color: #0a0a0a; padding: 6px 12px; border-radius: 4px; font-size: 0.875rem; font-weight: 500; border: none; cursor: pointer; } .ds-btn-primary:hover { background: #ffcd63; }"
+    },
+    {
+      "name": "Navigation",
+      "kind": "nav",
+      "refersTo": "text-faint",
+      "description": "Header nav: mono, aktif sayfa amber nokta + ivory; kutu ve alt çizgi yok.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-brand\" href=\"/\"><span class=\"ds-brand-glyph\">▸</span> WebSim Mağaza</a><div class=\"ds-links\"><a class=\"ds-link-active\" href=\"/\"><span class=\"ds-dot\"></span>vitrin</a><a class=\"ds-link\" href=\"/siparisler\">orders</a><a class=\"ds-link\" href=\"/sepet\">sepet <span class=\"ds-badge\">3</span></a></div></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #171717; font-size: 0.875rem; } .ds-brand { color: #fafafa; font-weight: 600; text-decoration: none; font-family: var(--font-geist-sans), sans-serif; } .ds-brand-glyph { color: #ffb224; } .ds-links { display: flex; align-items: center; gap: 16px; font-family: var(--font-geist-mono), monospace; } .ds-link { color: #737373; text-decoration: none; transition: color 0.15s; } .ds-link:hover { color: #d4d4d4; } .ds-link-active { color: #fafafa; text-decoration: none; } .ds-dot { display: inline-block; width: 6px; height: 6px; border-radius: 9999px; background: #ffb224; margin-right: 2px; vertical-align: middle; }"
     }
   ],
   "narrative": {
-    "northStar": "Butik Dükkan",
+    "northStar": "Commit Transcript",
+    "overview": "Bu mağaza bir konsol gibi okunur. Sayfa açıldığında kullanıcı bir vitrinle değil, canlı bir işlem kaydıyla karşılaşır: gerçek siparişler mono satırlar hâlinde, ▸ ibresiyle, yanıp sönen amber caret'ın nabzında. Derinlik yoktur — karanlık tek bir zemin; önleme katmanları zemin tonunun birer adım açılmasıyla elde edilir. Kutu yok: 1px borderlı kart kabukları ve gölgeler yerine zemin adımı + boşluk konuşur. Işık modu yok — bu mağazanın sahnesi karanlıkta okunan bir konsoldur. Tek sinyal rengi amber'dır: canlılığı (transcript, caret, · canlı ibaresi) ve satın alma yolunu (CTA butonları, sepet rozeti) işaretler. Yeşil ve kırmızı dekorasyon değildir, transcript semantiğidir: + satır eklenmiş demektir, PAID yeşildir, tükendi/kaldır/hata kırmızıdır. Emoji placeholder'lar dürüstlüğün parçasıdır: görsel yoksa alan yalan söylemez.",
     "keyCharacteristics": [
-      "Tek aksan yalnız satın alma yolunda",
-      "1px çizgi + nötr zemin farkıyla derinlik",
-      "Placeholder alan dürüstlük işareti olarak"
+      "Emissive koyu zemin, ışık modu yok; nötrler 4–5 derinlik adımı",
+      "Tek sinyal rengi amber; diff-add/del yalnız transcript semantiği + negatif durum",
+      "Kutu yok: derinlik zemin tonu adımlarıyla, hairline yalnız header/footer",
+      "Transcript dili: ▸ ibre, #id, · ayraç, PAID, yanıp sönen caret",
+      "Geist Sans (insan cümlesi) + Geist Mono (makine/veri/etiket) ikilisi",
+      "Hareket tek seferlik ve küçük: caret blink, badge pulse, line-in"
     ],
     "rules": [
-      { "name": "Fiyat Etiketi Kuralı", "body": "Mavi yalnızca satın alma yolu ve durum rozetlerinde; başlık ve metin aksanı değil.", "section": "colors" },
-      { "name": "Düz-ve-Sabit Kural", "body": "Gölge sadece durum yanıtı (hover) olarak görünür.", "section": "elevation" }
+      { "name": "Tek Sinyal Kuralı", "body": "Amber tek sinyal rengidir: canlılığı ve satın alma yolunu işaretler. Metin olarak asla paragraf doldurmaz; işaret (▸, ·, hero'daki nokta) ve eylem (CTA, rozet, fiyat) olarak kullanılır.", "section": "colors" },
+      { "name": "Diff Semantiği Kuralı", "body": "Yeşil yalnız +/PAID/status pozitifliği taşır; kırmızı yalnız transcript semantiği ve negatif durumdur (tükendi, kaldır, signout, hata). İkisi de asla dekorasyon değildir.", "section": "colors" },
+      { "name": "Mono Konuşur Kuralı", "body": "Mono yalnız makine sesidir: transcript, nav, etiket, fiyat, durum. İnsan cümlesi (başlık, paragraf) her zaman Geist Sans'tır.", "section": "typography" },
+      { "name": "Kutu Yok Kuralı", "body": "Derinlik zemin tonu adımıdır, çerçeve değil. 1px borderlı kart kabukları, gölgeler ve kutu çizimleri yok; hairline yalnız header/footer'dır.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do amber'ı canlılık ve satın alma yolunda kullan: CTA zeminleri, sepet rozeti, ▸ ibre, caret, ürün detay fiyatı (#ffb224; hover #ffcd63).",
+      "Do derinliği zemin adımıyla kur: kuyu #0a0a0a → panel #171717 → satır rgba(23,23,23,0.6) → kontrol #262626.",
+      "Do transcript dilini koru: ▸ amber, #id amber-soft, · ayraç faint, PAID diff-add, caret yanıp söner; veri gerçek DB'den gelir, sahte satır yok.",
+      "Do odak ve seçimi amber tut: :focus-visible 2px amber outline, ::selection amber zemin + #0a0a0a metin.",
+      "Do veri/etiket/finansal değerleri Geist Mono ile, cümleleri Geist Sans ile yaz.",
+      "Do parayı Intl.NumberFormat(\"tr-TRY\") ile, kuruş tabanlı göster."
+    ],
+    "donts": [
+      "Don't ikinci bir aksan rengi (mavi vb.) ekleme; tek sinyal amber'dır.",
+      "Don't diff-add'i buton/dekorasyon yap; yeşil yalnız +/PAID/status pozitifliğidir. diff-del'i transcript + negatif durumun dışına çıkarma.",
+      "Don't kartlara 1px border, gölge veya kutu çizimi ekle; derinlik zemin tonu adımıdır (Kutu Yok Kuralı).",
+      "Don't amber'ı uzun metin bloklarında kullan; amber işaret ve eylemdir, paragraf rengi değil.",
+      "Don't transcript'e sahte/doldurma satırı ekle; çevrimdışılık sessizce eski satırları gösterir.",
+      "Don't ikon gerektiren yere emoji ikon koy; emoji yalnız ürün placeholder'ıdır.",
+      "Don't giriş animasyonlarını çoğalt; hareket üç tek seferliktir: caret-blink, badge-pulse, line-in."
     ]
   }
 }

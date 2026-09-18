@@ -21,21 +21,27 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
   return (
     <article className="mx-auto max-w-2xl">
-      <Link href="/" className="mb-4 inline-block text-sm text-neutral-500 hover:underline">
-        ← Ürünlere dön
+      <Link href="/" className="inline-block font-mono text-sm text-neutral-400 hover:text-neutral-300">
+        ← vitrin
       </Link>
-      <div className="flex h-64 items-center justify-center rounded-lg bg-neutral-100 text-7xl dark:bg-neutral-800">
-        {product.emoji}
+
+      <div className="mt-4 rounded-md bg-neutral-950">
+        <div className="flex h-64 items-center justify-center text-8xl">{product.emoji}</div>
       </div>
-      <h1 className="mt-6 text-3xl font-bold">{product.name}</h1>
-      <p className="mt-2 text-2xl font-bold text-blue-600">{formatPrice(product.priceCents)}</p>
-      <p className="mt-4 text-neutral-600 dark:text-neutral-300">{product.description}</p>
-      <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">Stok: {product.stock} adet</p>
+
+      <div className="mt-6 flex items-baseline justify-between gap-4">
+        <h1 className="text-3xl font-bold">{product.name}</h1>
+        <p className="font-mono text-2xl font-bold text-amber">{formatPrice(product.priceCents)}</p>
+      </div>
+      <p className="mt-3 text-neutral-400">{product.description}</p>
+      <p className="mt-2 font-mono text-sm text-neutral-400">
+        stok: {product.stock} adet
+      </p>
       <div className="mt-6">
         {product.stock > 0 ? (
           <AddToCartButton productId={product.id} />
         ) : (
-          <span className="font-medium text-red-500">Bu ürün tükendi</span>
+          <span className="font-medium text-diff-del">Bu ürün tükendi</span>
         )}
       </div>
     </article>
