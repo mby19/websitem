@@ -1,0 +1,26 @@
+# Kafka broker — öğrenme demoları için tek düğümlük KRaft (zookeeper yok).
+# Kafka'nın kendisi JMV üstünde koşar; broker'u makinede tutmak, protokolü
+# (kafkajs), consumer group'u ve partition'ları gözle görmeyi mümkün kılar.
+# Başlat: docker compose up -d — durdur: docker compose down
+services:
+  kafka:
+    image: apache/kafka:3.9.0
+    container_name: websitem-kafka
+    ports:
+      - "9092:9092"
+    environment:
+      # KRaft: broker + controller tek süreçte (zookeeper döneminden farkı)
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      # Host'tan bağlanan istemciler (kafkajs) advertised listener üzerinden:
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      # Tek broker demo: topic meta replication 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      # Topic otomatik oluşsun (producer ilk mesajda orders topic'ini açar)
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"

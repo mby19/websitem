@@ -3,7 +3,6 @@
 // yetkisiz çağrı { error } döner, hiçbir değişiklik yapmaz.
 import { db } from "@/lib/prisma";
 import { isAdmin } from "@/lib/admin";
-import { consumeTick } from "@/lib/kafka-consume";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -72,16 +71,4 @@ export async function deleteProductAction(formData: FormData) {
   revalidatePath("/admin");
   revalidatePath("/");
   redirect(`/admin?ok=${encodeURIComponent("ürün silindi")}`);
-}
-
-// CONSUMER TICK — Kafka'dan elle parti tüket (admin butonu tetikler).
-export async function consumeTickAction() {
-  if (!(await isAdmin())) redirect("/giris?error=Yetkisiz");
-
-  const result = await consumeTick();
-  if ("error" in result) {
-    redirect(`/admin?err=${encodeURIComponent(result.error)}`);
-  }
-  revalidatePath("/admin");
-  redirect(`/admin?ok=${encodeURIComponent(`${result.consumed} yeni event kayda geçti`)}`);
 }

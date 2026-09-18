@@ -69,30 +69,38 @@ Vercel'de `DATABASE_URL` + `AUTH_SECRET` panel üzerinden ayarlanır.
 
 ## Kafka event pipeline (öğretici)
 
-Checkout, sipariş yazıldıktan sonra bir event yayınlar; Kafka'dan bağımsız
-bir consumer bu olayı kalıcı günlüğe düşer:
+Checkout, sipariş yazıldıktan sonra bir event yayınlar; ayrı bir consumer
+süreci bu olayı kalıcı günlüğe düşer:
 
 ```text
-PRODUCER                          BROKER                    CONSUMER
-checkout Server Action  ──HTTP──▶  Upstash Kafka   ──HTTP──▶  /api/events/consume
-(src/lib/kafka.ts)                topic: orders             (tick) → EventLog tablosu
-                                                            (partition·offset kayıtlı)
+PRODUCER                       BROKER (lokal, KRaft)      CONSUMER (ayrı süreç)
+checkout Server Action ──TCP──▶ docker: websitem-kafka ──TCP──▶ scripts/kafka-consumer.ts
+(src/lib/kafka.ts · kafkajs)    topic: orders, p0              group: websitem-log
+                                                               → EventLog tablosu
+                                                               (partition·offset)
 ```
 
+- **Broker:** `docker compose up -d` — tek düğümlük KRaft (zookeeper yok),
+  `apache/kafka:3.9.0`. Topic: `docker exec websitem-kafka
+  /opt/kafka/bin/kafka-topics.sh --create --topic orders --bootstrap-server
+  localhost:9092 --partitions 1 --replication-factor 1` (ya da ilk produce'da
+  otomatik oluşur).
 - **Producer** (`src/lib/kafka.ts`): checkout transaction'ı *sonrasında*
-  `ORDER_CREATED` event'i yayınlanır — best-effort: Kafka kapalıysa
-  (`UPSTASH_KAFKA_*` env yok) checkout PATLAMAZ (`eventPublished: false`).
-  Event payload'ı snapshot: tüm sipariş durumu taşınır (event-carried state).
-- **Consumer** (`POST /api/events/consume`): consumer group (`websitem-log`)
-  ile offset yönetimi. Her tick bir batch; `(topic,partition,offset)` unique
-  olduğundan aynı mesaj iki kez yazılmaz (idempotent consumer).
-- **Tetikleyiciler:** `npm run kafka:consume` (lokal 3 sn'lik döngü) ya da
-  admin → Event pipeline → *consume* butonu. Gerçek üretimde kalıcı worker.
+  `ORDER_CREATED` yayınlar — best-effort: broker kapalıysa (KAFKA_BROKER
+  env yok) checkout PATLAMAZ (`eventPublished: false`). Event payload'ı
+  snapshot: tüm sipariş durumu taşınır (event-carried state transfer).
+- **Consumer** (`scripts/kafka-consumer.ts`): `npm run kafka:consume` —
+  consumer group `websitem-log` ile offset yönetimi; her mesaj EventLog'a
+  idempotent yazılır (`(topic,partition,offset)` unique — çift yazım yok).
+  Ayrı süreç: Next.js'ten bağımsız — Kafka'nın "ayrı servis" fikrinin ta kendisi.
 - **Görünüm:** admin → Event pipeline (`kafka:on/off`, partition·offset satırları).
+- **Vercel notu:** broker bu makinede olduğundan canlıda event katmanı kapalı
+  kalır (graceful). Canlıda da Kafka istenirse HTTP tabanlı broker (Upstash)
+  eklenir — lib fonksiyonları zaten adapter-desenli.
 - **Neden Kafka burada?** Checkout'u yan etkilerinden (denetim kaydı,
-  bildirim, analitik) ayırmak: aynı event'i farklı consumer'lar farklı hızlarda
-  işleyebilir, replay edilebilir. 6 ürünlük demo için overkill — öğretici
-  bilinçli tercih; "doğru araç" tartışmasının iki yüzünü görmek için.
+  bildirim, analitik) ayırmak: aynı event'i farklı consumer'lar farklı
+  hızlarda işleyebilir, replay edilebilir. 6 ürünlük demo için overkill —
+  öğretici bilinçli tercih; "doğru araç" tartışmasının iki yüzünü görmek için.
 
 ### Deploy'da öğrenilen tuzaklar (Vercel + Turbopack + Prisma)
 

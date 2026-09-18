@@ -1,31 +1,34 @@
-// KAFKA İSTEMCİSİ — Upstash Kafka (HTTP tabanlı Kafka).
-// Serverless'tan (Vercel) Kafka'ya giden tek güvenli yol: HTTP. Upstash,
-// Kafka protokolüyle de uyumlu ama HTTP API'si fetch tabanlı olduğundan
-// soğuk serverless fonksiyonlarında TCP bağlantısı yönetme derdi yok.
+// KAFKA İSTEMCİSİ — gerçek Kafka protokolü (kafkajs) + lokal broker.
+// Broker: docker-compose'daki websitem-kafka (localhost:9092, KRaft).
 //
 // Öğretici mimari:
-//   PRODUCER (checkout) → topic: orders → CONSUMER (EventLog + transcript)
-// Event yayını "best-effort": Kafka kapalıysa (env yok) checkout PATLAMAZ —
-// sipariş DB'ye zaten yazıldı; event katmanı yan etki (side-effect).
-import { Kafka } from "@upstash/kafka";
+//   PRODUCER (checkout) → topic: orders → CONSUMER (scripts/kafka-consumer.ts)
+//   → EventLog tablosu (partition·offset kalıcı kayıt)
+//
+// Sınır: broker bu makinede — Vercel fonksiyonu ona erişemez; canlıda
+// KAFKA_BROKER env olmadığından event katmanı kapalı kalır (graceful).
+// Canlıya da Kafka için: HTTP tabanlı broker (Upstash) gerekir — aynı
+// lib fonksiyonlarının ikinci bir adapter'ı olarak eklenebilir.
+import { Kafka, logLevel } from "kafkajs";
+import type { Producer } from "kafkajs";
 
-const url = process.env.UPSTASH_KAFKA_REST_URL;
-const username = process.env.UPSTASH_KAFKA_USERNAME;
-const password = process.env.UPSTASH_KAFKA_PASSWORD;
-
-export const KAFKA_ENABLED = Boolean(url && username && password);
+export const KAFKA_BROKER = process.env.KAFKA_BROKER ?? "localhost:9092";
+export const KAFKA_ENABLED = Boolean(process.env.KAFKA_BROKER);
 export const KAFKA_TOPIC = "orders";
 
+// Producer singleton: her checkout'ta TCP bağlantı kurmak yerine global cache —
+// (kafkajs bağlantısı pahalı; prisma.ts'teki singleton deseniyle aynı fikir)
+const globalForKafka = globalThis as unknown as { producer?: Producer };
+
 function getKafka(): Kafka {
-  if (!url || !username || !password) {
-    throw new Error("Kafka env eksik — KAFKA_ENABLED ile kontrol et");
-  }
-  return new Kafka({ url, username, password });
+  return new Kafka({
+    clientId: "websitem",
+    brokers: [KAFKA_BROKER],
+    logLevel: logLevel.NOTHING, // dev loglarını kirletmesin
+  });
 }
 
-// PRODUCER — order.created event'ini yayınlar.
-// Event payload'ı snapshot: o anki siparişin tüm durumu taşınır; consumer
-// sipariş tablosuna bakmak zorunda kalmasın (event-carried state transfer).
+// PRODUCER — order.created event'ini yayınlar (best-effort).
 export async function publishOrderCreated(order: {
   id: number;
   totalCents: number;
@@ -35,21 +38,30 @@ export async function publishOrderCreated(order: {
   if (!KAFKA_ENABLED) return false;
 
   try {
-    const kafka = getKafka();
-    const key = String(order.id); // aynı sipariş aynı partition'a → sıralama korunur
-    const value = JSON.stringify({
-      type: "ORDER_CREATED",
-      orderId: order.id,
-      totalCents: order.totalCents,
-      itemCount: order.itemCount,
-      firstName: order.firstName,
-      occurredAt: new Date().toISOString(),
+    const producer = globalForKafka.producer ?? getKafka().producer();
+    await producer.connect();
+    globalForKafka.producer = producer;
+
+    // key = orderId: aynı key aynı partition'a gider → sipariş sırası korunur
+    await producer.send({
+      topic: KAFKA_TOPIC,
+      messages: [
+        {
+          key: String(order.id),
+          value: JSON.stringify({
+            type: "ORDER_CREATED",
+            orderId: order.id,
+            totalCents: order.totalCents,
+            itemCount: order.itemCount,
+            firstName: order.firstName,
+            occurredAt: new Date().toISOString(),
+          }),
+        },
+      ],
     });
-    // Upstash HTTP produce: topic, key, value
-    await kafka.producer().produce(KAFKA_TOPIC, { value, key, partition: 0 });
     return true;
   } catch {
-    // Producer hatası checkout'u bloklamaz — event kaybı kabul edilebilir (demo)
+    // Producer hatası checkout'u bloklamaz — event kaybı demo'da kabul edilebilir.
     // Gerçek sistemde: outbox deseni (DB'de beklet, ayrı relay ile tekrar dene)
     return false;
   }

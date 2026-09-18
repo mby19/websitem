@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/prisma";
 import { isAdmin } from "@/lib/admin";
 import { formatPrice } from "@/lib/format";
-import { createProductAction, updateProductAction, deleteProductAction, consumeTickAction } from "./actions";
+import { createProductAction, updateProductAction, deleteProductAction } from "./actions";
 import { KAFKA_ENABLED, KAFKA_TOPIC } from "@/lib/kafka";
 
 export const dynamic = "force-dynamic";
@@ -140,22 +140,15 @@ export default async function AdminPage({
           </span>
         </h2>
         <p className="mb-3 text-sm text-neutral-400">
-          Producer (checkout) → <span className="font-mono">{KAFKA_TOPIC}</span> topic'i → consumer
-          (bu panel + <span className="font-mono">npm run kafka:consume</span> döngüsü). Her satırın
-          gerçek Kafka koordinatı: partition · offset.
+          Producer (checkout) → <span className="font-mono">{KAFKA_TOPIC}</span> topic'i →{" "}
+          <span className="font-mono">npm run kafka:consume</span> script'i → EventLog.
+          Consumer ayrı bir süreç: kendi group'u, kendi offset'i. Her satırın gerçek
+          Kafka koordinatı: partition · offset.
         </p>
-        <form action={consumeTickAction} className="mb-3">
-          <button
-            type="submit"
-            disabled={!KAFKA_ENABLED}
-            className="rounded bg-amber px-4 py-2 font-mono text-sm font-medium text-neutral-950 hover:bg-amber-soft disabled:bg-neutral-800 disabled:text-neutral-500"
-          >
-            consume
-          </button>
-        </form>
         {events.length === 0 ? (
           <p className="font-mono text-sm text-neutral-400">
-            EventLog boş — checkout yap, sonra consume ile olayları kayda geçir.
+            EventLog boş — consumer script'i çalıştır (<span className="font-mono">npm run kafka:consume</span>)
+            ve vitrinden checkout yap; olaylar buraya otomatik düşer.
           </p>
         ) : (
           <div className="rounded-md bg-neutral-950 p-4 font-mono text-sm leading-relaxed">
