@@ -5,6 +5,7 @@ import { CartProvider } from "@/lib/cart-context";
 import { CartBadge } from "@/components/cart-badge";
 import { NavLink } from "@/components/nav-link";
 import { SessionMenu } from "@/components/session-menu";
+import { isAdmin } from "@/lib/admin";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -22,11 +23,12 @@ export const metadata: Metadata = {
   description: "Gerçekten çalışan demo e-ticaret — transactional checkout, fiyat koruması",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const admin = await isAdmin();
   return (
     <html lang="tr">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
@@ -44,6 +46,7 @@ export default function RootLayout({
                 <NavLink href="/sepet">
                   sepet <CartBadge />
                 </NavLink>
+                {admin && <NavLink href="/admin">admin</NavLink>}
                 <SessionMenu />
               </div>
             </nav>
