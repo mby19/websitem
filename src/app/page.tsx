@@ -32,7 +32,7 @@ export default async function ProductsPage() {
             >
               <Link href={`/urun/${product.id}`} className="mb-2 block">
                 {/* Placeholder alan: ürün-başına emoji, kartları ayırt eder */}
-                <div className="flex h-36 items-center justify-center rounded bg-neutral-100 text-4xl dark:bg-neutral-800">
+                <div className="flex h-36 items-center justify-center rounded bg-neutral-100 text-5xl dark:bg-neutral-800">
                   {product.emoji}
                 </div>
                 <h2 className="mt-3 font-semibold">{product.name}</h2>
@@ -40,13 +40,18 @@ export default async function ProductsPage() {
               <p className="mb-3 line-clamp-2 flex-1 text-sm text-neutral-500 dark:text-neutral-400">{product.description}</p>
               <div className="flex items-center justify-between">
                 <span className="font-bold">{formatPrice(product.priceCents)}</span>
-                {/* Stok yoksa buton devre dışı */}
+                {/* Stok yoksa buton devre dışı; azalan stokta ince uyarı */}
                 {product.stock > 0 ? (
                   <AddToCartButton productId={product.id} />
                 ) : (
                   <span className="text-sm text-red-500">Tükendi</span>
                 )}
               </div>
+              {product.stock > 0 && product.stock <= 2 && (
+                <p className="mt-1 text-right text-xs font-mono text-neutral-400">
+                  Son {product.stock}
+                </p>
+              )}
             </div>
           ))}
         </div>

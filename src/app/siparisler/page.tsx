@@ -22,7 +22,10 @@ export default function OrdersPage() {
 
   return (
     <section>
-      <h1 className="mb-6 text-2xl font-bold">Siparişlerim</h1>
+      <h1 className="mb-2 text-2xl font-bold">Siparişlerim</h1>
+      <p className="mb-6 text-sm text-neutral-500 dark:text-neutral-400">
+        Misafir siparişleri yalnızca bu cihazda saklanır; hesapla kalıcı olur.
+      </p>
       {orderIds.length === 0 ? (
         <div className="rounded-lg border border-neutral-200 p-6 text-center dark:border-neutral-800">
           <p className="text-neutral-500 mb-3">Henüz siparişin yok.</p>

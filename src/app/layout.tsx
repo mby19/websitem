@@ -40,16 +40,26 @@ export default function RootLayout({
               <div className="flex items-center gap-3 sm:gap-4">
                 <NavLink href="/">Ürünler</NavLink>
                 <NavLink href="/siparisler">Siparişler</NavLink>
-                <Link href="/sepet" className="hover:underline">
+                <NavLink href="/sepet">
                   Sepet <CartBadge />
-                </Link>
+                </NavLink>
                 <SessionMenu />
               </div>
             </nav>
           </header>
           <main className="mx-auto max-w-5xl px-4 py-8">{children}</main>
           <footer className="border-t border-neutral-200 py-6 text-center text-sm text-neutral-500 dark:border-neutral-800">
-            Öğrenme amaçlı demo mağaza — ödemeler test modundadır.
+            <p className="text-xs">
+              transactional checkout · fiyat koruması · snapshot fiyatlaması —{" "}
+              <a
+                href="https://github.com/mby19/websitem"
+                target="_blank"
+                rel="noreferrer"
+                className="underline underline-offset-2"
+              >
+                github.com/mby19/websitem
+              </a>
+            </p>
           </footer>
         </CartProvider>
       </body>
