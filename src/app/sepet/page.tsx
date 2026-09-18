@@ -79,6 +79,9 @@ export default function CartPage() {
         <Link href="/" className="text-blue-600 hover:underline">
           → Ürünlere git
         </Link>
+        <p className="mt-8 text-xs text-neutral-400">
+          Not: misafir siparişleri yalnızca bu cihazda saklanır; hesapla kalıcı olur.
+        </p>
       </section>
     );
   }
