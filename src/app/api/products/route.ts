@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
   // Sadece sepetin ihtiyaç duyduğu alanları seç (güvenlik: tüm tabloyu sızmamak için)
   const products = await db.product.findMany({
     where: { id: { in: ids } },
-    select: { id: true, name: true, priceCents: true, stock: true },
+    select: { id: true, name: true, priceCents: true, stock: true, emoji: true },
   });
 
   return NextResponse.json(products);

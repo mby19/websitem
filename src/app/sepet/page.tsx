@@ -13,6 +13,7 @@ type ProductInfo = {
   name: string;
   priceCents: number;
   stock: number;
+  emoji: string;
 };
 
 export default function CartPage() {
@@ -60,7 +61,7 @@ export default function CartPage() {
     setLoading(true);
     fetch(`/api/products?ids=${lines.map((l) => l.productId).join(",")}`)
       .then((r) => r.json())
-      .then((data: Array<{ id: number; name: string; priceCents: number; stock: number }>) => {
+      .then((data: ProductInfo[]) => {
         setProducts(new Map(data.map((p) => [p.id, p])));
       })
       .finally(() => setLoading(false));
@@ -96,8 +97,8 @@ export default function CartPage() {
               key={line.productId}
               className="flex items-center gap-4 rounded-lg border border-neutral-200 p-3 dark:border-neutral-800"
             >
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded bg-neutral-100 text-2xl dark:bg-neutral-900">
-                📦
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded bg-neutral-100 text-2xl dark:bg-neutral-800">
+                {product.emoji}
               </div>
               <div className="flex-1">
                 <Link href={`/urun/${line.productId}`} className="font-semibold hover:underline">

@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-15T20:15:00.000Z",
+  "title": "Design System: WebSim Mağaza",
+  "extensions": {
+    "colorMeta": {
+      "primary": { "role": "primary", "displayName": "Butik Mavi", "canonical": "#2563eb" },
+      "surface-alt": { "role": "neutral", "displayName": "Beton Nötr", "canonical": "#f5f5f5" },
+      "ink": { "role": "neutral", "displayName": "İspirto Mürekkep", "canonical": "#171717" },
+      "line": { "role": "neutral", "displayName": "Kül Çizgi", "canonical": "#e5e5e5" }
+    },
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Satın alma yolundaki tek aksan: Sepete Ekle, Ödemeye Geç.",
+      "html": "<button class=\"ds-btn-primary\">Sepete Ekle</button>",
+      "css": ".ds-btn-primary { background: #2563eb; color: #fff; padding: 6px 12px; border-radius: 4px; font-size: 0.875rem; font-weight: 500; border: none; transition: background 0.15s; } .ds-btn-primary:hover { background: #1d4ed8; } .ds-btn-primary:disabled { background: #d4d4d4; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "İkincil eylem: çizgili, yüksüz.",
+      "html": "<button class=\"ds-btn-ghost\">Sepeti Boşalt</button>",
+      "css": ".ds-btn-ghost { background: transparent; color: #171717; padding: 6px 12px; border-radius: 4px; font-size: 0.875rem; border: 1px solid #d4d4d4; transition: background 0.15s; } .ds-btn-ghost:hover { background: #f5f5f5; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Butik Dükkan",
+    "keyCharacteristics": [
+      "Tek aksan yalnız satın alma yolunda",
+      "1px çizgi + nötr zemin farkıyla derinlik",
+      "Placeholder alan dürüstlük işareti olarak"
+    ],
+    "rules": [
+      { "name": "Fiyat Etiketi Kuralı", "body": "Mavi yalnızca satın alma yolu ve durum rozetlerinde; başlık ve metin aksanı değil.", "section": "colors" },
+      { "name": "Düz-ve-Sabit Kural", "body": "Gölge sadece durum yanıtı (hover) olarak görünür.", "section": "elevation" }
+    ]
+  }
+}

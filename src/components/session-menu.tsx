@@ -2,6 +2,7 @@
 // OTURUM DURUMU — header'daki "Giriş / Kayıt / Kullanıcı + Çıkış" alanı.
 // Session'ı /api/auth/session'dan okur; çıkışı Auth.js form endpoint'ine POST'lar.
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 // /api/auth/session yanıtındaki kullanıcı alanı
@@ -33,13 +34,16 @@ export function SessionMenu() {
       .finally(() => setLoaded(true));
   }, []);
 
-  if (!loaded) return null; // kırpışmayı önle: durum gelene kadar boş
+  if (!loaded) {
+    // Session gelene kadar sabit genişlikte iskelet: layout kayması (CLS) yok
+    return <span className="inline-block h-4 w-24 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700" />;
+  }
 
   if (!user) {
     return (
       <div className="flex gap-3">
-        <a href="/giris" className="hover:underline">Giriş</a>
-        <a href="/kayit" className="hover:underline">Kayıt</a>
+        <Link href="/giris" className="hover:underline">Giriş</Link>
+        <Link href="/kayit" className="hover:underline">Kayıt</Link>
       </div>
     );
   }

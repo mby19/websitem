@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Geist, Geist_Mono } from "next/font/google";
 import { CartProvider } from "@/lib/cart-context";
 import { CartBadge } from "@/components/cart-badge";
+import { NavLink } from "@/components/nav-link";
 import { SessionMenu } from "@/components/session-menu";
 import "./globals.css";
 
@@ -32,17 +33,13 @@ export default function RootLayout({
         {/* CartProvider: sepet state'ini tüm sayfalara sağlar */}
         <CartProvider>
           <header className="border-b border-neutral-200 dark:border-neutral-800">
-            <nav className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-              <Link href="/" className="text-lg font-bold">
+            <nav className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-y-2 px-4 py-3">
+              <Link href="/" className="whitespace-nowrap text-base font-bold sm:text-lg">
                 WebSim Mağaza
               </Link>
-              <div className="flex items-center gap-4">
-                <Link href="/" className="hover:underline">
-                  Ürünler
-                </Link>
-                <Link href="/siparisler" className="hover:underline">
-                  Siparişler
-                </Link>
+              <div className="flex items-center gap-3 sm:gap-4">
+                <NavLink href="/">Ürünler</NavLink>
+                <NavLink href="/siparisler">Siparişler</NavLink>
                 <Link href="/sepet" className="hover:underline">
                   Sepet <CartBadge />
                 </Link>

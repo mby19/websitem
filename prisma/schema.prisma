@@ -42,6 +42,7 @@ model Product {
   priceCents  Int                                      // fiyatı KURUŞ olarak tutarız!
                                                            // (1.50 TL => 150. Float parasal
                                                            //  işlemlerde yuvarlama hatası yapar)
+  emoji       String   @default("📦")                  // placeholder görsel karakteri (ürün başına)
   image       String   @default("")                    // görsel URL'si
   stock       Int      @default(0)                     // stok adedi
   createdAt   DateTime @default(now())
